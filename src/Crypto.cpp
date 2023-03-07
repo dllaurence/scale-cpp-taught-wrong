@@ -11,6 +11,8 @@
 #include <openssl/err.h>
 #include <openssl/evp.h>
 
+#include "doctest/doctest.h"
+
 
 /*
   Private final helper class to initialize and finalize the OpenSSL library.
@@ -46,7 +48,7 @@ Init::Init()
 
     // OPENSSL_config(NULL);
     // OPENSSL_init_crypto
-};
+}
 
 
 Init::~Init()
@@ -60,7 +62,54 @@ Init::~Init()
 
     /* Remove error strings */
     ERR_free_strings();
-};
+}
+
+
+TEST_CASE("testing openssl::Crypto: stack object")
+{
+    openssl::Init init; // Initialize OpenSSL
+
+    /* Why?
+
+       1. Tied init/finalize to a scope.
+       2. Avoided a static object and made the initialization and finalization
+       predictable.
+
+       Also, didn't use a using statement.
+    */
+}
+
+
+TEST_CASE("testing openssl::Crypto: heap object")
+{
+    openssl::Init* init = new openssl::Init(); // Initialize OpenSSL
+
+    CHECK(init != nullptr);
+
+    // delete init;
+    // init = nullptr;
+    /*
+      1. Not tied to a scope any more
+      2. Back to our original problem
+      3. Will leak if an exception is thrown.
+      4. Just avoid "new XXX" almost completely.
+
+    */
+}
+
+
+TEST_CASE("testing openssl::Crypto: unique object")
+{
+    // Usually "auto", but you'll need this for parameters and such.
+    UniqueInit init = std::make_unique<openssl::Init>(); // Initialize OpenSSL
+
+    CHECK(init);
+
+    /*
+      1. unique_ptr ties us back to the surrounding scope
+      2. Again, don't ever write "new XXX"
+    */
+}
 
 
 } // namespace OpenSSL

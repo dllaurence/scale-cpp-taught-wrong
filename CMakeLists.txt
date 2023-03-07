@@ -17,8 +17,10 @@ if(EXISTS "${LOC_PATH}")
     message(FATAL_ERROR "You cannot build in a source directory (or any directory with a CMakeLists.txt file). Please make a build subdirectory. Feel free to remove CMakeCache.txt and CMakeFiles.")
 endif()
 
+# TEST
+option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
 
-message(STATUS "Building with ${CMAKE_C_COMPILER_ID} ${CMAKE_C_COMPILER_VERSION} on ${CMAKE_SYSTEM_NAME}")
+message(STATUS "Building with ${CMAKE_CXX_COMPILER_ID} ${CMAKE_C_COMPILER_VERSION} on ${CMAKE_SYSTEM_NAME}")
 
 # For clang-tidy
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -54,28 +56,53 @@ set(CMAKE_CXX_STANDARD 17)
 set(FLAGS_ALL "$ENV{CXXFLAGS} -Wall -Wextra -Werror -Wundef -Wp,-D_FORTIFY_SOURCE=2 -fPIC -pthread")
 
 # RELEASE
-set(FLAGS_RELEASE "${FLAGS_ALL} -DNDEBUG -O3")
+set(CMAKE_CXX_FLAGS_RELEASE "${FLAGS_ALL} -DNDEBUG -O3")
 
 set(FLAGS_DEBUG_INFO "-fno-omit-frame-pointer -ggdb")
+set(LINKER_FLAGS_DEBUG_INFO "-fno-omit-frame-pointer")
 
 # DEBUG
-set(FLAGS_DEBUG "${FLAGS_DEBUG_INFO} -Og")
+set(CMAKE_CXX_FLAGS_DEBUG "${FLAGS_ALL} ${FLAGS_DEBUG_INFO} -Og")
 
 # ALL SANITIZE
 set(FLAGS_SANITIZE "${FLAGS_DEBUG_INFO} -O3")
+set(LINKER_FLAGS_SANITIZE "${LINKER_FLAGS_DEBUG_INFO} -v")
+
+# THREAD SANITIZER
+set(CMAKE_CXX_FLAGS_THREADSAN "${FLAGS_ALL} ${FLAGS_SANITIZE} -fsanitize=thread")
+set(CMAKE_LINKER_FLAGS_THREADSAN "${LINKER_FLAGS_SANITIZE} -fsanitize=thread")
 
 # ALL OTHER SANITIZERS
 # Note: FORTIFY_SOURCE shut off because it interferes with the address
 # sanitizer.
-set(FLAGS_SANITIZE_OTHER "${FLAGS_SANITIZE} -fsanitize=address -Wp,-U_FORTIFY_SOURCE -fsanitize=undefined -fno-sanitize-recover=all -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow -fno-sanitize=null -fno-sanitize=alignment")
+set(CMAKE_CXX_FLAGS_SANITIZE "${FLAGS_ALL} ${FLAGS_SANITIZE} -fsanitize=address -Wp,-U_FORTIFY_SOURCE -fsanitize=undefined -fno-sanitize-recover=all -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow -fno-sanitize=null -fno-sanitize=alignment")
+set(CMAKE_LINKER_FLAGS_SANITIZE "${LINKER_FLAGS_SANITIZE} -fsanitize=address -sanitize=undefined -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow")
 
-# ADDRESS SANITIZER
-# N.B. -fsanitize=memory cannot be combined with -fsanitize=address
-# WARNING: GCC doesn't support memory sanitizer. :-(
-set(FLAGS_SANITIZE_MEMORY "${FLAGS_SANITIZE} -fsanitize=memory")
+# FILES TO BE TIDIED
+#set(CLANG_TIDY_SOURCES "")
 
-# THREAD SANITIZER
-set(FLAGS_SANITIZE_THREADS "${FLAGS_SANITIZE} -fsanitize=thread")
+# FILES WITH TEST CASES
+#set(TEST_SOURCES "")
+
+# Globally used libraries
+include(FetchContent)
+FetchContent_Declare(doctest
+    URL https://github.com/doctest/doctest/archive/refs/tags/v2.4.10.tar.gz
+)
+FetchContent_MakeAvailable(doctest)
 
 # SUBDIRECTORIES
 add_subdirectory(src)
+add_subdirectory(demo)
+
+# FIXME: This stuff fails because of paths!
+# CLANG TIDY
+# https://developers.redhat.com/blog/2021/04/06/get-started-with-clang-tidy-in-red-hat-enterprise-linux#using_a_compilation_database
+#add_custom_target(clang-tidy-check
+#  #clang-tidy -p ${CMAKE_BINARY_DIR}/compile_commands.json "${CLANG_TIDY_SOURCES}" DEPENDS "${CLANG_TIDY_SOURCES}"
+#
+#  clang-tidy -p "${CMAKE_BINARY_DIR}/compile_commands.json" "${CLANG_TIDY_SOURCES}"
+#)
+#add_custom_target(tidy DEPENDS clang-tidy-check)
+#
+#message(STATUS "root Tidy sources: ${TIDY_SOURCES}")

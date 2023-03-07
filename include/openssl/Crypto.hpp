@@ -15,6 +15,8 @@
   TODO: enforce singleton nature
 */
 
+#include <memory>
+
 namespace openssl {
 
 
@@ -28,6 +30,8 @@ public:
 
 private:
 };
+
+using UniqueInit = std::unique_ptr<Init>;
 
 
 } // namespace openssl
