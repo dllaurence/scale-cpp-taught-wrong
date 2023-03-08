@@ -7,6 +7,8 @@
 
 #include "openssl/Crypto.hpp"
 
+#include <stdexcept>
+
 #include <openssl/conf.h>
 #include <openssl/err.h>
 #include <openssl/evp.h>
@@ -22,12 +24,20 @@
   on 2023/03/06.
 */
 
+namespace {
+
+[[maybe_unused]] void
+throw_fn()
+{
+    throw std::runtime_error("Surprise!");
+}
+}
+
 namespace openssl {
 
 
 Init::Init()
 {
-
     /* Load the human readable error strings for libcrypto */
     ERR_load_crypto_strings();
 
@@ -86,6 +96,38 @@ TEST_CASE("testing openssl::Crypto: heap object")
 
     CHECK(init != nullptr);
 
+    delete init;
+    init = nullptr;
+    /*
+      1. Not tied to a scope any more
+      2. Back to our original problem
+      3. Will leak if an exception is thrown.
+      4. Just avoid "new XXX" almost completely.
+
+    */
+}
+
+
+TEST_CASE("testing openssl::Crypto: unique object")
+{
+    // Usually "auto", but you'll need this for parameters and such.
+    UniqueInit init = std::make_unique<openssl::Init>(); // Initialize OpenSSL
+
+    CHECK(init);
+
+    /*
+      1. unique_ptr ties us back to the surrounding scope
+      2. Again, don't ever write "new XXX"
+    */
+}
+
+
+TEST_CASE("testing openssl::Crypto: heap object with throw")
+{
+    openssl::Init* init = new openssl::Init(); // Initialize OpenSSL
+
+    CHECK(init != nullptr);
+
     // delete init;
     // init = nullptr;
     /*
@@ -98,7 +140,7 @@ TEST_CASE("testing openssl::Crypto: heap object")
 }
 
 
-TEST_CASE("testing openssl::Crypto: unique object")
+TEST_CASE("testing openssl::Crypto: unique object with throw")
 {
     // Usually "auto", but you'll need this for parameters and such.
     UniqueInit init = std::make_unique<openssl::Init>(); // Initialize OpenSSL
