@@ -2,4 +2,4 @@
 #
 # Usage: ./run_one.sh <release>
 
-./build_$1/demo/demo_init_final
+./build_$1/test/tests_unit
