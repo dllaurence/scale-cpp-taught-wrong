@@ -8,6 +8,7 @@ add_library(sslwrapper)
 set(SSLWRAPPER_SOURCES
   ScopedInit.cpp
   SingleInit.cpp
+  Unique.cpp
 )
 target_sources(sslwrapper
   PRIVATE
