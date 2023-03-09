@@ -2,7 +2,7 @@
   Copyright Dustin Laurence 2023. All rights reserved. Licensed under the
   FreeBSD license (BSD 2-clause)
 
-  Part of the sslwrapper demo C++ interface to the OpenSSL cryptographic
+  Part of the dl::ssl demo C++ interface to the OpenSSL cryptographic
   library.
 
   Run the SingleInit tests.
@@ -16,15 +16,15 @@
 
 #include <stdexcept>
 
-#include "sslwrapper/ScopedInit.hpp"
-#include "sslwrapper/SingleInit.hpp"
+#include "dl/ssl/ScopedInit.hpp"
+#include "dl/ssl/SingleInit.hpp"
 
 
 // Using directive is OK in tests
-using namespace sslwrapper;
+using namespace dl::ssl;
 
 
-TEST_CASE("testing sslwrapper::SingleInit: one object")
+TEST_CASE("testing dl::ssl::SingleInit: one object")
 {
     auto singleInit = SingleInit::CreateOnce(); // Initialize OpenSSL
 
@@ -32,7 +32,7 @@ TEST_CASE("testing sslwrapper::SingleInit: one object")
 
     CHECK_THROWS_AS(SingleInit::CreateOnce(), std::runtime_error);
     CHECK_THROWS_WITH(SingleInit::CreateOnce(),
-                      "sslwrapper::SingleInit::CreateOnce called again.");
+                      "dl::ssl::SingleInit::CreateOnce called again.");
 
     /*
       1. unique_ptr ties us back to the surrounding scope

@@ -4,7 +4,7 @@
   Copyright Dustin Laurence 2023. All rights reserved. Licensed under the
   FreeBSD license (BSD 2-clause)
 
-  Part of the sslwrapper demo C++ interface to the OpenSSL cryptographic
+  Part of the dl::ssl demo C++ interface to the OpenSSL cryptographic
   library.
 
   Provides an *owned* singleton to initialize and finalize the OpenSSL library
@@ -16,7 +16,7 @@
 
 #include <memory>
 
-namespace sslwrapper {
+namespace dl::ssl {
 
 class SingleInit;
 using UniqueSingleInit = std::unique_ptr<SingleInit>;
@@ -35,4 +35,4 @@ private:
 };
 
 
-} // namespace sslwrapper
+} // namespace dl::ssl

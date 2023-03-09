@@ -85,5 +85,5 @@ FetchContent_Declare(doctest
 FetchContent_MakeAvailable(doctest)
 
 # SUBDIRECTORIES
-add_subdirectory(src/sslwrapper)
+add_subdirectory(src/dl/ssl)
 add_subdirectory(test)

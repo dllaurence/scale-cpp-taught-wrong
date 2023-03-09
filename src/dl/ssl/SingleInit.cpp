@@ -2,16 +2,16 @@
  Copyright Dustin Laurence 2023. All rights reserved. Licensed under the
  FreeBSD license (BSD 2-clause)
 
- Part of the sslwrapper demo C++ interface to the OpenSSL cryptographic
+ Part of the dl::ssl demo C++ interface to the OpenSSL cryptographic
  library.
 
- Provides a scoped object to initialize and finalize the OpenSSL library
+ Provides an *owned* singleton to initialize and finalize the OpenSSL library
 
  OpenSSL code cribbed from https://wiki.openssl.org/index.php/Libcrypto_API
  on 2023/03/06.
 */
 
-#include "sslwrapper/ScopedInit.hpp"
+#include "dl/ssl/SingleInit.hpp"
 
 #include <stdexcept>
 
@@ -22,10 +22,27 @@
 #include "doctest/doctest.h"
 
 
-namespace sslwrapper {
+namespace dl::ssl {
 
 
-ScopedInit::ScopedInit()
+UniqueSingleInit
+SingleInit::CreateOnce()
+{
+    static bool already_called = false;
+
+    if (already_called) {
+        throw std::runtime_error(
+            "dl::ssl::SingleInit::CreateOnce called again.");
+    }
+
+    already_called = true;
+
+    // Can't use std::make_unique because the ctor is private
+    // return std::unique_ptr<SingleInit>(new SingleInit);
+    return UniqueSingleInit(new SingleInit);
+}
+
+SingleInit::SingleInit()
 {
     /* Load the human readable error strings for libcrypto */
     ERR_load_crypto_strings();
@@ -50,7 +67,7 @@ ScopedInit::ScopedInit()
 }
 
 
-ScopedInit::~ScopedInit()
+SingleInit::~SingleInit()
 {
     /* Removes all digests and ciphers */
     EVP_cleanup();
@@ -64,51 +81,4 @@ ScopedInit::~ScopedInit()
 }
 
 
-TEST_CASE("testing sslwrapper::ScopedInit: stack object")
-{
-    ScopedInit scopedInit; // Initialize OpenSSL
-
-    /* Why?
-
-       1. Tied init/finalize to a scope.
-       2. Avoided a static object and made the initialization and finalization
-       predictable.
-
-       Also, didn't use a using statement.
-    */
-}
-
-
-TEST_CASE("testing sslwrapper::ScopedInit: heap object")
-{
-    auto scopedInit = new sslwrapper::ScopedInit(); // Initialize OpenSSL
-
-    CHECK(scopedInit != nullptr);
-
-    delete scopedInit;
-    scopedInit = nullptr;
-    /*
-      1. Not tied to a scope any more
-      2. Back to our original problem
-      3. Will leak if an exception is thrown.
-      4. Just avoid "new XXX" almost completely.
-
-    */
-}
-
-
-TEST_CASE("testing sslwrapper::ScopedInit: unique object")
-{
-    auto scopedInit =
-        std::make_unique<sslwrapper::ScopedInit>(); // Initialize OpenSSL
-
-    CHECK(scopedInit);
-
-    /*
-      1. unique_ptr ties us back to the surrounding scope
-      2. Again, don't ever write "new XXX"
-    */
-}
-
-
-} // namespace sslwrapper
+} // namespace dl::ssl

@@ -2,7 +2,7 @@
   Copyright Dustin Laurence 2023. All rights reserved. Licensed under the
   FreeBSD license (BSD 2-clause)
 
-  Part of the sslwrapper demo C++ interface to the OpenSSL cryptographic
+  Part of the dl::ssl demo C++ interface to the OpenSSL cryptographic
   library.
 
   Provides utilities for using unique_ptr with any object from any memory pool
@@ -13,7 +13,7 @@
 */
 
 
-#include "sslwrapper/Unique.hpp"
+#include "dl/ssl/Unique.hpp"
 
 #include <cstring>
 
@@ -26,10 +26,10 @@
 #include "doctest/doctest.h"
 
 
-namespace sslwrapper {
+namespace dl::ssl {
 
 
-TEST_CASE("testing sslwrapper::Unique: C object deletion")
+TEST_CASE("testing dl::ssl::Unique: C object deletion")
 {
 
     struct CObj
@@ -57,7 +57,7 @@ TEST_CASE("testing sslwrapper::Unique: C object deletion")
 }
 
 
-TEST_CASE("testing sslwrapper::Unique: C array deletion")
+TEST_CASE("testing dl::ssl::Unique: C array deletion")
 {
 
     const char cString[] = "Here is a C string.";
@@ -77,7 +77,7 @@ TEST_CASE("testing sslwrapper::Unique: C array deletion")
 }
 
 
-TEST_CASE("testing sslwrapper::Unique: CStrDup")
+TEST_CASE("testing dl::ssl::Unique: CStrDup")
 {
 
     const char cString[] = "Here is a C string.";
@@ -96,4 +96,4 @@ TEST_CASE("testing sslwrapper::Unique: CStrDup")
 }
 
 
-} // namespace sslwrapper
+} // namespace dl::ssl

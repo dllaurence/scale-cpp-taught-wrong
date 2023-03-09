@@ -4,7 +4,7 @@
   Copyright Dustin Laurence 2023. All rights reserved. Licensed under the
   FreeBSD license (BSD 2-clause)
 
-  Part of the sslwrapper demo C++ interface to the OpenSSL cryptographic
+  Part of the dl::ssl demo C++ interface to the OpenSSL cryptographic
   library.
 
   Provides utilities for using unique_ptr with any object from any memory pool
@@ -23,7 +23,7 @@
 #include <openssl/bn.h> // For OPENSSL_free
 
 
-namespace sslwrapper {
+namespace dl::ssl {
 
 
 // Turns an arbitrary free() function into a deleter for unique_ptr.
@@ -100,4 +100,4 @@ CStrDup(const UniqueCArray<char>& str)
 }
 
 
-} // namespace sslwrapper
+} // namespace dl::ssl

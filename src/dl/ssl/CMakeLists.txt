@@ -2,22 +2,22 @@
 #
 # Make an automatic library - will be static or dynamic based on user setting
 
-add_library(sslwrapper)
+add_library(dl_ssl)
 
 # SOURCES
-set(SSLWRAPPER_SOURCES
+set(SSL_SOURCES
   ScopedInit.cpp
   SingleInit.cpp
   Unique.cpp
 )
-target_sources(sslwrapper
+target_sources(dl_ssl
   PRIVATE
-  ${SSLWRAPPER_SOURCES}
+  ${SSL_SOURCES}
 )
 
 # INCLUDE DIRECTORIES
 # Public, as users of our library will need them too
-target_include_directories(sslwrapper
+target_include_directories(dl_ssl
   PUBLIC
   "${CMAKE_SOURCE_DIR}/include"
   "${doctest_SOURCE_DIR}"
@@ -25,7 +25,7 @@ target_include_directories(sslwrapper
 
 # LIBRARY DEPENDENCES
 find_package(OpenSSL REQUIRED)
-target_link_libraries(sslwrapper
+target_link_libraries(dl_ssl
   PUBLIC
   OpenSSL::Crypto
   #GSL

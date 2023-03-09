@@ -6,7 +6,7 @@
 
   Provides a scoped object to initialize and finalize the OpenSSL library
 
-  Part of the sslwrapper demo C++ interface to the OpenSSL cryptographic
+  Part of the dl::ssl demo C++ interface to the OpenSSL cryptographic
   library.
 */
 
@@ -14,7 +14,7 @@
 #include <memory>
 
 
-namespace sslwrapper {
+namespace dl::ssl {
 
 
 class ScopedInit;
@@ -33,4 +33,4 @@ private:
 };
 
 
-} // namespace sslwrapper
+} // namespace dl::ssl
