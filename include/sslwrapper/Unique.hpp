@@ -16,6 +16,7 @@
 
 
 #include <cstdlib> // For C free()
+#include <cstring> // For C strdup & friends
 
 #include <memory>
 
@@ -48,13 +49,55 @@ using UniqueCObject = std::unique_ptr<T, CDeleter>;
 template<class T>
 using UniqueCArray = std::unique_ptr<T[], CDeleter>;
 
+
 template<class T>
 UniqueCObject<T>
-CMalloc();
+CMalloc()
+{
+    T* ptr = static_cast<T*>(std::malloc(sizeof(T)));
+
+    if (!ptr) {
+
+        throw std::bad_alloc();
+    }
+
+    return UniqueCObject<T>(ptr);
+}
+
 
 template<class T>
 UniqueCArray<T>
-CMalloc(size_t elementCount);
+CMalloc(size_t elementCount)
+{
+    T* ptr = static_cast<T*>(std::malloc(sizeof(T) * elementCount));
+
+    if (!ptr) {
+        throw std::bad_alloc();
+    }
+
+    return UniqueCArray<T>(ptr);
+}
+
+
+inline UniqueCArray<char>
+CStrDup(const char* str)
+{
+    UniqueCArray<char> newStr(strdup(str));
+
+    if (!newStr) {
+
+        throw std::bad_alloc();
+    }
+
+    return newStr;
+}
+
+
+inline UniqueCArray<char>
+CStrDup(const UniqueCArray<char>& str)
+{
+    return CStrDup(str.get());
+}
 
 
 } // namespace sslwrapper

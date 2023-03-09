@@ -29,21 +29,6 @@
 namespace sslwrapper {
 
 
-template<class T>
-UniqueCObject<T>
-CMalloc()
-{
-    T* ptr = static_cast<T*>(std::malloc(sizeof(T)));
-
-    if (!ptr) {
-
-        throw std::bad_alloc();
-    }
-
-    return UniqueCObject<T>(ptr);
-}
-
-
 TEST_CASE("testing sslwrapper::Unique: C object deletion")
 {
 
@@ -72,20 +57,6 @@ TEST_CASE("testing sslwrapper::Unique: C object deletion")
 }
 
 
-template<class T>
-UniqueCArray<T>
-CMalloc(size_t elementCount)
-{
-    T* ptr = static_cast<T*>(std::malloc(sizeof(T) * elementCount));
-
-    if (!ptr) {
-        throw std::bad_alloc();
-    }
-
-    return UniqueCArray<T>(ptr);
-}
-
-
 TEST_CASE("testing sslwrapper::Unique: C array deletion")
 {
 
@@ -99,6 +70,27 @@ TEST_CASE("testing sslwrapper::Unique: C array deletion")
     strncpy(cStringCopy.get(), cString, cStringSize);
 
     CHECK(strlen(cStringCopy.get()) + 1 == cStringSize);
+
+    CHECK(0 == strcmp(cStringCopy.get(), cString));
+
+    // The Sanitizers will verify that it does not leak.
+}
+
+
+TEST_CASE("testing sslwrapper::Unique: CStrDup")
+{
+
+    const char cString[] = "Here is a C string.";
+
+    auto cStringCopy = CStrDup(cString);
+
+    CHECK(cStringCopy);
+
+    CHECK(0 == strcmp(cStringCopy.get(), cString));
+
+    auto cStringCopy2 = CStrDup(cStringCopy);
+
+    CHECK(0 == strcmp(cStringCopy2.get(), cStringCopy.get()));
 
     // The Sanitizers will verify that it does not leak.
 }
