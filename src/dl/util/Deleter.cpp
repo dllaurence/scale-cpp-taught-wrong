@@ -32,12 +32,6 @@ DeleterDummy()
 }
 
 
-} // namespace dl::util
-
-
-using namespace dl::util;
-
-
 TEST_CASE("testing dl::util::Deleter: Basic deletion")
 {
     const std::size_t size = 100;
@@ -48,3 +42,6 @@ TEST_CASE("testing dl::util::Deleter: Basic deletion")
 
     // The Sanitizers will verify that it does not leak.
 }
+
+
+} // namespace dl::util

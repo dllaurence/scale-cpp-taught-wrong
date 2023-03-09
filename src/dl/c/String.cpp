@@ -19,12 +19,6 @@
 namespace dl::c {
 
 
-} // namespace dl::c
-
-
-using namespace dl::c;
-
-
 TEST_CASE("testing dl::c::String: CStrDup")
 {
 
@@ -42,3 +36,6 @@ TEST_CASE("testing dl::c::String: CStrDup")
 
     // The Sanitizers will verify that it does not leak.
 }
+
+
+} // namespace dl::c

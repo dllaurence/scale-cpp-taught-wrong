@@ -18,12 +18,6 @@
 namespace dl::c {
 
 
-} // namespace dl::c
-
-
-using namespace dl::c;
-
-
 TEST_CASE("testing dl::c::Malloc: C object deletion")
 {
 
@@ -70,3 +64,6 @@ TEST_CASE("testing dl::c::Malloc: C array deletion")
 
     // The Sanitizers will verify that it does not leak.
 }
+
+
+} // namespace dl::c

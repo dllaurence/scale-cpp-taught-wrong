@@ -64,12 +64,6 @@ ScopedInit::~ScopedInit()
 }
 
 
-} // namespace dl::ssl
-
-
-using namespace dl::ssl;
-
-
 TEST_CASE("testing dl::ssl::ScopedInit: stack object")
 {
     ScopedInit scopedInit; // Initialize OpenSSL
@@ -115,3 +109,6 @@ TEST_CASE("testing dl::ssl::ScopedInit: unique object")
       2. Again, don't ever write "new XXX"
     */
 }
+
+
+} // namespace dl::ssl
