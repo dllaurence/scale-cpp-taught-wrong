@@ -7,4 +7,5 @@ set(TESTS_UNIT_SOURCES
   SingleInit_unit.cpp
 )
 add_executable(tests_unit ${TESTS_UNIT_SOURCES})
-target_link_libraries(tests_unit dl_ssl doctest stdc++ m)
+# target_link_libraries(tests_unit dl_util dl_c dl_ssl doctest stdc++ m)
+target_link_libraries(tests_unit dl doctest stdc++ m)

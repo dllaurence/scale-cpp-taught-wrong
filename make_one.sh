@@ -13,6 +13,4 @@ if [ $LEVEL != "0" ]; then
     VERBOSE="-- VERBOSE=${LEVEL}"
 fi
 
-echo "VERBOSE=$VERBOSE"
-
 cmake --build build_$1 $VERBOSE

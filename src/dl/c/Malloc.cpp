@@ -2,34 +2,29 @@
   Copyright Dustin Laurence 2023. All rights reserved. Licensed under the
   FreeBSD license (BSD 2-clause)
 
-  Part of the dl::ssl demo C++ interface to the OpenSSL cryptographic
-  library.
+  Part of the dl::c demo library.
 
-  Provides utilities for using unique_ptr with any object from any memory pool
-  that has a free() function.
-
-  Code based on
-  https://stackoverflow.com/questions/19053351/how-do-i-use-a-custom-deleter-with-a-stdunique-ptr-member
+  Provides utilities for using unique_ptr with malloc/free.
 */
 
 
-#include "dl/ssl/Unique.hpp"
+#include "dl/c/Malloc.hpp"
 
 #include <cstring>
-
-//#include <stdexcept>
-//
-//#include <openssl/conf.h>
-//#include <openssl/err.h>
-//#include <openssl/evp.h>
 
 #include "doctest/doctest.h"
 
 
-namespace dl::ssl {
+namespace dl::c {
 
 
-TEST_CASE("testing dl::ssl::Unique: C object deletion")
+} // namespace dl::c
+
+
+using namespace dl::c;
+
+
+TEST_CASE("testing dl::c::Malloc: C object deletion")
 {
 
     struct CObj
@@ -57,7 +52,7 @@ TEST_CASE("testing dl::ssl::Unique: C object deletion")
 }
 
 
-TEST_CASE("testing dl::ssl::Unique: C array deletion")
+TEST_CASE("testing dl::c::Malloc: C array deletion")
 {
 
     const char cString[] = "Here is a C string.";
@@ -75,25 +70,3 @@ TEST_CASE("testing dl::ssl::Unique: C array deletion")
 
     // The Sanitizers will verify that it does not leak.
 }
-
-
-TEST_CASE("testing dl::ssl::Unique: CStrDup")
-{
-
-    const char cString[] = "Here is a C string.";
-
-    auto cStringCopy = CStrDup(cString);
-
-    CHECK(cStringCopy);
-
-    CHECK(0 == strcmp(cStringCopy.get(), cString));
-
-    auto cStringCopy2 = CStrDup(cStringCopy);
-
-    CHECK(0 == strcmp(cStringCopy2.get(), cStringCopy.get()));
-
-    // The Sanitizers will verify that it does not leak.
-}
-
-
-} // namespace dl::ssl
