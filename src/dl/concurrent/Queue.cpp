@@ -23,9 +23,12 @@
 namespace dl::concurrent {
 
 
-TEST_CASE("testing dl::concurrent:")
+TEST_CASE_TEMPLATE("testing dl::concurrent::Queue",
+                   Q,
+                   WilliamsQueue<int>,
+                   MaximQueue<int>)
 {
-    Queue<int, cppcia::threadsafe_queue<int>> queue(100);
+    Q queue(100);
 
     auto pHandle = queue.GetProducerHandle();
     auto cHandle = queue.GetConsumerHandle();

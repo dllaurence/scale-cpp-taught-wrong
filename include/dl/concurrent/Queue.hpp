@@ -96,7 +96,7 @@ public:
     auto GetConsumerHandle() { return ConsumerHandle(*this); };
 
     // Expose only the queue operations we want with the signature we want.
-    // Negative logic because we'll probably use error codes someday
+    // NEGATIVE LOGIC because we'll probably use error codes someday
     // For this queue, push never fails unless memory runs out
     // Consider if we want to pass by value like this
     void BlockingPush(T el) { mQueue.push(el); };
@@ -116,12 +116,74 @@ public:
     Queue& operator=(Queue&&) = delete;
 };
 
+template<class T>
+using WilliamsQueue = Queue<T, cppcia::threadsafe_queue<T>>;
 
-#if 0
+
 // Specialize for AtomicQueueB2
-template<typename T>
+template<class T>
 class Queue<T, atomic_queue::AtomicQueueB2<T>>
 {
+public:
+
+    class ProducerHandle
+    {
+        friend Queue; // Only the Queue may create handles
+
+    private:
+
+        Queue* mQueue;
+
+    public:
+
+        ~ProducerHandle() = default;
+
+        void BlockingPush(T el) { mQueue->BlockingPush(el); };
+        bool TryPush(T el) { return mQueue->TryPush(el); };
+
+        // Standard operations
+        ProducerHandle(const ProducerHandle&) = default;
+        ProducerHandle(ProducerHandle&&) = default;
+        ProducerHandle& operator=(const ProducerHandle&) = default;
+        ProducerHandle& operator=(ProducerHandle&&) = default;
+
+    private:
+
+        // Only the queue may create handles
+        explicit ProducerHandle(
+            Queue<T, atomic_queue::AtomicQueueB2<T>>& queue)
+            : mQueue(&queue){};
+    };
+
+    class ConsumerHandle
+    {
+        friend Queue; // Only the Queue may create handles
+
+    private:
+
+        Queue* mQueue;
+
+    public:
+
+        ~ConsumerHandle() = default;
+
+        void BlockingPop(T& el) { mQueue->BlockingPop(el); };
+        bool TryPop(T& el) { return mQueue->TryPop(el); };
+
+        // Standard operations
+        ConsumerHandle(const ConsumerHandle&) = default;
+        ConsumerHandle(ConsumerHandle&&) = default;
+        ConsumerHandle& operator=(const ConsumerHandle&) = default;
+        ConsumerHandle& operator=(ConsumerHandle&&) = default;
+
+    private:
+
+        // Only the queue may create handles
+        explicit ConsumerHandle(
+            Queue<T, atomic_queue::AtomicQueueB2<T>>& queue)
+            : mQueue(&queue){};
+    };
+
 private:
 
     atomic_queue::AtomicQueueB2<T> mQueue;
@@ -132,16 +194,21 @@ public:
         : mQueue(size){};
     ~Queue() = default;
 
+    auto GetProducerHandle() { return ProducerHandle(*this); };
+    auto GetConsumerHandle() { return ConsumerHandle(*this); };
+
     // Expose only the queue operations we want with the signature we want.
+    // Negative logic because we'll probably use error codes someday
 
-    // These are the busy-wait versions, CPU hogs but fast if the queue is
-    // usually neither full nor empty.
-    void BlockingPush(T&& el) { mQueue.push(std::forward<T>(el)); };
-    // So we can have queues of values with reasonable semantics.
-    void BlockingPush(const T& el) { mQueue.push(el); };
+    void BlockingPush(T el) { mQueue.push(el); };
+    // Experiment: interface for a value-oriented queue
+    // void BlockingPush(T&& el) { mQueue.push(std::forward<T>(el)); };
+    // void BlockingPush(const T& el) { mQueue.push(el); };
 
-    bool TryPush(T&& el) { return !mQueue.try_push(std::forward<T>(el)); };
-    bool TryPush(const T& el) { return !mQueue.try_push(el); };
+    bool TryPush(T el) { return !mQueue.try_push(el); };
+    // Experiment: interface for a value-oriented queue
+    // bool TryPush(T&& el) { return !mQueue.try_push(std::forward<T>(el)); };
+    // bool TryPush(const T& el) { return !mQueue.try_push(el); };
 
     void BlockingPop(T& el) { el = mQueue.pop(); };
     bool TryPop(T& el) { return !mQueue.try_pop(el); };
@@ -152,7 +219,9 @@ public:
     Queue& operator=(const Queue&) = delete;
     Queue& operator=(Queue&&) = delete;
 };
-#endif
+
+template<class T>
+using MaximQueue = Queue<T, atomic_queue::AtomicQueueB2<T>>;
 
 
 } // namespace dl::concurrent
