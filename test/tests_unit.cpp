@@ -11,25 +11,3 @@
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest/doctest.h"
-
-#include "dl/util/Deleter.hpp"
-
-
-// Using directive is OK in tests
-using namespace dl;
-
-
-TEST_CASE("dummy calls")
-{
-    // Ensure the tests are called
-    // TODO: Find out why this is necessary
-    util::DeleterDummy();
-
-    CHECK(true);
-}
-
-
-// Ensure the tests are called
-// TODO: Find out why this is necessary
-// c::CDeleter deleter;
-// auto create_once = SingleInit::CreateOnce;

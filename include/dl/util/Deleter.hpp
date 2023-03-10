@@ -29,8 +29,4 @@ struct Deleter
 };
 
 
-void
-DeleterDummy();
-
-
 } // namespace dl::util

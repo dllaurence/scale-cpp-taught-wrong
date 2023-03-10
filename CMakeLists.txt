@@ -65,17 +65,17 @@ set(CMAKE_CXX_FLAGS_DEBUG "${FLAGS_ALL} ${FLAGS_DEBUG_INFO} -Og")
 
 # ALL SANITIZER TARGETS
 set(FLAGS_SANITIZE "${FLAGS_DEBUG_INFO} -O3")
-set(LINKER_FLAGS_SANITIZE "${LINKER_FLAGS_DEBUG_INFO} -v")
+#set(LINKER_FLAGS_SANITIZE "${LINKER_FLAGS_DEBUG_INFO} -v")
 
 # THREAD SANITIZER
 set(CMAKE_CXX_FLAGS_THREADSAN "${FLAGS_ALL} ${FLAGS_SANITIZE} -fsanitize=thread")
-set(CMAKE_LINKER_FLAGS_THREADSAN "${LINKER_FLAGS_SANITIZE} -fsanitize=thread")
+#set(CMAKE_LINKER_FLAGS_THREADSAN "${LINKER_FLAGS_SANITIZE} -fsanitize=thread")
 
 # ALL OTHER SANITIZERS
 # Note: FORTIFY_SOURCE shut off because it interferes with the address
 # sanitizer.
 set(CMAKE_CXX_FLAGS_SANITIZE "${FLAGS_ALL} ${FLAGS_SANITIZE} -fsanitize=address -Wp,-U_FORTIFY_SOURCE -fsanitize=undefined -fno-sanitize-recover=all -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow -fno-sanitize=null -fno-sanitize=alignment")
-set(CMAKE_LINKER_FLAGS_SANITIZE "${LINKER_FLAGS_SANITIZE} -fsanitize=address -sanitize=undefined -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow")
+#set(CMAKE_LINKER_FLAGS_SANITIZE "${LINKER_FLAGS_SANITIZE} -fsanitize=address -sanitize=undefined -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow")
 
 # Globally used libraries
 include(FetchContent)

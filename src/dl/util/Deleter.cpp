@@ -16,20 +16,12 @@
 
 #include <cstdlib>
 
-#include <iostream> // Only for testing
 #include <memory>
 
 #include "doctest/doctest.h"
 
 
 namespace dl::util {
-
-
-void
-DeleterDummy()
-{
-    std::cout << "DeleterDummy running" << std::endl;
-}
 
 
 TEST_CASE("testing dl::util::Deleter: Basic deletion")

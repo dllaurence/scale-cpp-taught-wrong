@@ -19,6 +19,8 @@ set(DL_SOURCES
   c/Malloc.cpp
   c/String.cpp
 
+  concurrent/Queue.cpp
+
   ssl/ScopedInit.cpp
   ssl/SingleInit.cpp
 )
