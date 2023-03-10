@@ -35,6 +35,7 @@ target_include_directories(dl
   PUBLIC
   "${CMAKE_SOURCE_DIR}/include"
   "${doctest_SOURCE_DIR}"
+  "${atomic_queue_SOURCE_DIR}/include"
 )
 
 # LIBRARY DEPENDENCES

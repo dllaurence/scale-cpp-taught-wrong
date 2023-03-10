@@ -1,15 +1,20 @@
-cmake_minimum_required(VERSION 3.22)
-
 # Copyright Dustin Laurence 2023. All rights reserved. Licensed under the
 # FreeBSD license (BSD 2-clause)
 #
 # Useful advice: https://cliutils.gitlab.io/modern-cmake/
+
+
+cmake_minimum_required(VERSION 3.22)
 
 project(
   CPPTaughtWrong
   VERSION 0.1
   DESCRIPTION "Source for SCALE 2023 talk: C++ Things You Were Taught To Do Wrong"
   LANGUAGES CXX)
+
+######################################################################
+# Misc options
+######################################################################
 
 ### Require out-of-source builds
 file(TO_CMAKE_PATH "${PROJECT_BINARY_DIR}/CMakeLists.txt" LOC_PATH)
@@ -21,7 +26,7 @@ option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
 
 message(STATUS "Building with ${CMAKE_CXX_COMPILER_ID} ${CMAKE_C_COMPILER_VERSION} on ${CMAKE_SYSTEM_NAME}")
 
-# For clang-tidy
+# For tooling (e.g. clang-tidy)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 ######################################################################
@@ -77,13 +82,28 @@ set(CMAKE_CXX_FLAGS_THREADSAN "${FLAGS_ALL} ${FLAGS_SANITIZE} -fsanitize=thread"
 set(CMAKE_CXX_FLAGS_SANITIZE "${FLAGS_ALL} ${FLAGS_SANITIZE} -fsanitize=address -Wp,-U_FORTIFY_SOURCE -fsanitize=undefined -fno-sanitize-recover=all -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow -fno-sanitize=null -fno-sanitize=alignment")
 #set(CMAKE_LINKER_FLAGS_SANITIZE "${LINKER_FLAGS_SANITIZE} -fsanitize=address -sanitize=undefined -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow")
 
+######################################################################
 # Globally used libraries
+######################################################################
+
+# DOCTEST
 include(FetchContent)
 FetchContent_Declare(doctest
     URL https://github.com/doctest/doctest/archive/refs/tags/v2.4.10.tar.gz
 )
 FetchContent_MakeAvailable(doctest)
 
+# ATOMIC_QUEUE
+# include atomic_queue
+FetchContent_Declare(atomic_queue
+    #URL https://github.com/max0x7ba/atomic_queue/archive/refs/tags/v1.0.tar.gz
+    URL https://github.com/max0x7ba/atomic_queue/archive/refs/tags/v1.1.tar.gz
+)
+FetchContent_MakeAvailable(atomic_queue)
+
+######################################################################
 # SUBDIRECTORIES
+######################################################################
+
 add_subdirectory(src/dl)
 add_subdirectory(test)
