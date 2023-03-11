@@ -25,9 +25,14 @@ class ScopedInit final
 {
 public:
 
-    explicit ScopedInit();
+    explicit ScopedInit(); // Should be private!
 
     ~ScopedInit(); // non-virtual is safe for final classes
+
+    static UniqueScopedInit New()
+    {
+        return std::make_unique<dl::ssl::ScopedInit>();
+    }
 
 private:
 };

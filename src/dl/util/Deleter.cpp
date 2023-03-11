@@ -36,4 +36,19 @@ TEST_CASE("testing dl::util::Deleter: Basic deletion")
 }
 
 
+TEST_CASE("testing dl::util::Deleter: Dynamic usage")
+{
+    const std::size_t size = 100;
+
+    // Here we pass the free() function to the constructor, at the cost of
+    // making unique_ptr take up two pointers instead of one.
+    std::unique_ptr<void, decltype(std::free)*> mem(std::malloc(size),
+                                                    std::free);
+
+    CHECK(mem);
+
+    // The Sanitizers will verify that it does not leak.
+}
+
+
 } // namespace dl::util

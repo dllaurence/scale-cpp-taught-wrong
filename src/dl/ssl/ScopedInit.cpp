@@ -79,8 +79,12 @@ TEST_CASE("testing dl::ssl::ScopedInit: stack object")
 }
 
 
+/* What if there isn't a single scope to tie it to? */
+
+
 TEST_CASE("testing dl::ssl::ScopedInit: heap object")
 {
+    // BAD idea!
     auto scopedInit = new ScopedInit(); // Initialize OpenSSL
 
     CHECK(scopedInit != nullptr);
@@ -99,14 +103,30 @@ TEST_CASE("testing dl::ssl::ScopedInit: heap object")
 
 TEST_CASE("testing dl::ssl::ScopedInit: unique object")
 {
+    // Better idea
     auto scopedInit =
         std::make_unique<dl::ssl::ScopedInit>(); // Initialize OpenSSL
 
     CHECK(scopedInit);
 
     /*
-      1. unique_ptr ties us back to the surrounding scope
+      1. unique_ptr ties us back to the surrounding scope, but we can move
+      it to another scope, into a heap object, whatever.
       2. Again, don't ever write "new XXX"
+    */
+}
+
+
+TEST_CASE("testing dl::ssl::ScopedInit: hide the make_unique call")
+{
+    // Best idea
+    auto scopedInit = ScopedInit::New();
+
+    CHECK(scopedInit);
+
+    /*
+      1. More foolproof than writing out make_unique explicitly.
+      2 If the ctor is private, then it's impossible to not use unique_ptr.
     */
 }
 
